@@ -1,0 +1,23 @@
+# scan_address_port 静态采集节点配置
+scan_address_port:
+  - node_ip: 178.157.33.133
+    ports: 80,65432,50001
+    hostname: "manager"
+  - node_ip: 199.180.115.13-16
+    ports: 80,12345,50001
+    hostname: ""
+
+# timeout_ms 每个端口扫描超时毫秒
+timeout_ms: 200
+# process 并发线程数
+process: 10
+
+# prometheus 自动采集节点
+prometheus:
+  query:
+    api: https://prometheus.doumeng.com/api/v1/query?query=last_over_time(doumeng_manager_node_state[30m])==1
+    # labels 对应名称， node_port 采用的是真实值
+    labels:
+      hostname: node_host
+      node_ip: node_ip
+      ports: 80,12345,50001-50010

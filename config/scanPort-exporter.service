@@ -1,0 +1,18 @@
+[Unit]
+Description=scanPort-exporter service
+After=network.target
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/usr/local/scanPort-exporter/
+ExecStart=/usr/local/scanPort-exporter/scanPort-exporter \
+    --config_file config/config.yaml \
+    --scan_source prometheus
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
