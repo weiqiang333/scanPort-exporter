@@ -1,2 +1,4 @@
 vendor/
 .idea/
+scanPort-exporter
+*.tar.gz
