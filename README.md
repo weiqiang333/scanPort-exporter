@@ -8,7 +8,8 @@
 Example
 ```shell
 mkdir /usr/local/scanPort-exporter
-tar -zxf scanPort-exporter-linux-amd64.tar.gz -C /usr/local/scanPort-exporter
+wget https://github.com/weiqiang333/scanPort-exporter/releases/download/v1.1/scanPort-exporter-linux-amd64-v1.1.tar.gz
+tar -zxf scanPort-exporter-linux-amd64-v1.1.tar.gz -C /usr/local/scanPort-exporter
 chmod +x /usr/local/scanPort-exporter/scanPort-exporter
 cd /usr/local/scanPort-exporter
 /usr/local/scanPort-exporter/scanPort-exporter --config_file config/config.yaml
@@ -24,10 +25,14 @@ Flags
       --config_file string   config file (default "config/config.yaml")
       --scan_source string   scan_source configfile/prometheus (default "prometheus")
 ```
-
+- URL
+```shell
+    http://127.0.0.1:9106/metrics
+    http://127.0.0.1:9106/reload  # 从新加载配置文件 default "config/config.yaml"
+```
 
 ## prometheus
-- metrics API
+- http://127.0.0.1:9106/metrics
 ```
 # HELP scanport_exporter_scan_port 端口连通性扫描, 0 关闭，1 开放
 # TYPE scanport_exporter_scan_port gauge

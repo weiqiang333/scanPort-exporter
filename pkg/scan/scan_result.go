@@ -98,31 +98,34 @@ type resultMetric struct {
 }
 
 func (s *ScanResult) getConfigPrometheus(scanIP *ScanIp) {
-	prAPI := viper.GetString("prometheus.query.api")
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
-	resp, err := client.Get(prAPI)
-	if err != nil {
-		fmt.Println("Failed getConfigPrometheus http client get error: ", err.Error())
-		return
-	}
-	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
-	node := prometheusApiRes{}
-	if err = json.Unmarshal(body, &node); err != nil {
-		fmt.Println("Failed getConfigPrometheus json Unmarshal error:", err.Error())
-		return
-	}
-	if node.Status != "success" {
-		fmt.Println("Failed getConfigPrometheus data node.Status not is success")
-		return
-	}
-	for _, node := range node.Data.Result {
-		ip := node.Metric[viper.GetString("prometheus.query.labels.node_ip")]
-		hostname := node.Metric[viper.GetString("prometheus.query.labels.hostname")]
-		ports := viper.GetString("prometheus.query.labels.ports")
-		openPorts, allPorts := scanIP.GetIpOpenPort(ip, ports)
-		s.getScanResult(ip, hostname, openPorts, allPorts)
+	querySum := len(viper.Get("prometheus.query").([]interface{}))
+	for i := 0; i < querySum; i++ {
+		prAPI := viper.GetString(fmt.Sprintf("prometheus.query.%v.api", i))
+		client := http.Client{
+			Timeout: 5 * time.Second,
+		}
+		resp, err := client.Get(prAPI)
+		if err != nil {
+			fmt.Println("Failed getConfigPrometheus http client get error: ", err.Error())
+			return
+		}
+		defer resp.Body.Close()
+		body, _ := ioutil.ReadAll(resp.Body)
+		node := prometheusApiRes{}
+		if err = json.Unmarshal(body, &node); err != nil {
+			fmt.Println("Failed getConfigPrometheus json Unmarshal error:", err.Error())
+			return
+		}
+		if node.Status != "success" {
+			fmt.Println("Failed getConfigPrometheus data node.Status not is success")
+			return
+		}
+		for _, node := range node.Data.Result {
+			ip := node.Metric[viper.GetString(fmt.Sprintf("prometheus.query.%v.labels.node_ip", i))]
+			hostname := node.Metric[viper.GetString(fmt.Sprintf("prometheus.query.%v.labels.hostname", i))]
+			ports := viper.GetString(fmt.Sprintf("prometheus.query.%v.labels.ports", i))
+			openPorts, allPorts := scanIP.GetIpOpenPort(ip, ports)
+			s.getScanResult(ip, hostname, openPorts, allPorts)
+		}
 	}
 }
