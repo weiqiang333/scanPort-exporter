@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os/exec"
 	"runtime"
@@ -48,7 +49,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 }
 
 func init() {
-	pflag.String("scan_source", "prometheus", "scan_source configfile/prometheus")
+	pflag.String("scan_source", "configfile", "scan_source configfile/prometheus")
 	pflag.String("address", ":9106", "Listen address")
 	pflag.String("config_file", "config/config.yaml", "config file")
 	pflag.Parse()
@@ -71,7 +72,17 @@ func main() {
 	}
 	// 暴露
 	http.Handle("/metrics", promhttp.Handler())
+	http.HandleFunc("/reload", reloadConfig)
 	http.ListenAndServe(address, nil)
+}
+
+func reloadConfig(w http.ResponseWriter, _ *http.Request) {
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil {             // Handle errors reading the config file
+		fmt.Println(fmt.Errorf("Fatal error config file: %w \n", err))
+	}
+	fmt.Println(fmt.Sprintf("reload config file: %s", viper.ConfigFileUsed()))
+	io.WriteString(w, fmt.Sprintf("reload config file: %s", viper.ConfigFileUsed()))
 }
 
 func open(uri string) error {

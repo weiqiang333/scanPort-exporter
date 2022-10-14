@@ -15,9 +15,15 @@ process: 10
 # prometheus 自动采集节点
 prometheus:
   query:
-    api: https://prometheus.doumeng.com/api/v1/query?query=last_over_time(doumeng_manager_node_state[30m])==1
-    # labels 对应名称， node_port 采用的是真实值
-    labels:
-      hostname: node_host
-      node_ip: node_ip
-      ports: 80,12345,50001-50010
+    - api: https://prometheus.doumeng.com/api/v1/query?query=last_over_time(doumeng_manager_node_state[30m])==1
+      # labels 对应名称， node_port 采用的是真实值
+      labels:
+        hostname: node_host
+        node_ip: node_ip
+        ports: 80,12345,50001-50010
+    - api: https://prometheus.doumeng.com/api/v1/query?query=last_over_time(node_suspended[30m])==0
+      # labels 对应名称， node_port 采用的是真实值
+      labels:
+        hostname: hostname
+        node_ip: ip_address
+        ports: 80,12345,50001-50005
