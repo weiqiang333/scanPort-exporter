@@ -2,3 +2,4 @@ vendor/
 .idea/
 scanPort-exporter
 *.tar.gz
+config/production
