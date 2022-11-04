@@ -39,7 +39,7 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 
 // Collect implements the prometheus.Collector interface.
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
-
+	e.ScanPort.Reset()
 	s := scan.NewScanPortResult()
 	scanPortResults := s.CreateScan()
 	for _, res := range scanPortResults.Results {
