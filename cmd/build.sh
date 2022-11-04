@@ -14,4 +14,4 @@ if [ -z $version ]; then
 fi
 
 tar -zcvf scanPort-exporter-linux-amd64-${version}.tar.gz \
-  scanPort-exporter config/ README.md
+  scanPort-exporter config/config.yaml config/scanPort-exporter.service README.md README-cn.md

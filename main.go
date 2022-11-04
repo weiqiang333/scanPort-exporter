@@ -20,7 +20,10 @@ type Exporter struct {
 	ScanPort *prometheus.GaugeVec
 }
 
-const namespace = "scanport_exporter"
+const (
+	namespace = "scanport_exporter"
+	version   = "v1.2"
+)
 
 func NewExporter() *Exporter {
 	return &Exporter{
@@ -39,7 +42,7 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 
 // Collect implements the prometheus.Collector interface.
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
-
+	e.ScanPort.Reset()
 	s := scan.NewScanPortResult()
 	scanPortResults := s.CreateScan()
 	for _, res := range scanPortResults.Results {
@@ -49,6 +52,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 }
 
 func init() {
+	pflag.Bool("version", false, "print the version")
 	pflag.String("scan_source", "configfile", "scan_source configfile/prometheus")
 	pflag.String("address", ":9106", "Listen address")
 	pflag.String("config_file", "config/config.yaml", "config file")
@@ -57,6 +61,10 @@ func init() {
 
 func main() {
 	viper.BindPFlags(pflag.CommandLine)
+	if viper.GetBool("version") {
+		fmt.Println("scanPort-exporter version: ", version)
+		return
+	}
 	viper.SetConfigType("yaml")
 	viper.SetConfigFile(viper.GetString("config_file"))
 	err := viper.ReadInConfig() // Find and read the config file

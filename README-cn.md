@@ -1,17 +1,18 @@
 # scanPort-exporter
 
-The metrics API for port scanning connectivity status is provided to the exporter of prometheus
+端口扫描连通性状态的 metrics API, 提供给 prometheus 的 exporter.
 
-Port scanning metrics uses golang to achieve high performance and high concurrency
+端口扫描 metrics 使用 golang 实现高性能高并发.
 
-[中文](README.md)
+[Language English](README.md)
 
-## usage
-Install / usage
+## 使用
+安装使用方法
 ```shell
+version=v1.2
 mkdir /usr/local/scanPort-exporter
-wget https://github.com/weiqiang333/scanPort-exporter/releases/download/v1.1/scanPort-exporter-linux-amd64-v1.1.tar.gz
-tar -zxf scanPort-exporter-linux-amd64-v1.1.tar.gz -C /usr/local/scanPort-exporter
+wget https://github.com/weiqiang333/scanPort-exporter/releases/download/${version}/scanPort-exporter-linux-amd64-${version}.tar.gz
+tar -zxf scanPort-exporter-linux-amd64-${version}.tar.gz -C /usr/local/scanPort-exporter
 chmod +x /usr/local/scanPort-exporter/scanPort-exporter
 cd /usr/local/scanPort-exporter
 /usr/local/scanPort-exporter/scanPort-exporter --config_file config/config.yaml
@@ -21,7 +22,7 @@ systemctl daemon-reload
 systemctl enable --now scanPort-exporter
 systemctl status scanPort-exporter
 ```
-scanPort-exporter Flags:
+scanPort-exporter 支持的启动参数:
 ```
       --address string       Listen address (default ":9106")
       --config_file string   config file (default "config/config.yaml")
@@ -88,7 +89,7 @@ scanport_exporter_scan_port{hostname="hostname",node_ip="127.0.0.1",node_port="8
 
 
 ## grafana
-The following [Dashboard template](./docs/grafana.json), can be imported into grafana to get an basic dashboard.
+这是 [仪表板模板](./docs/grafana.json), 可以导入 grafana 以获得基本的仪表板。
 
-Example:
+展示仪表板案例:
 ![scan grafana](./docs/img/grafana-scanPort.png)
