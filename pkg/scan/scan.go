@@ -34,6 +34,7 @@ func (s *ScanIp) GetIpOpenPort(ip string, port string) ([]int, []int) {
 		pageCount int
 		num       int
 		openPorts []int
+		downPorts []int
 		mutex     sync.Mutex
 	)
 	ports, _ := s.getAllPort(port)
@@ -63,26 +64,29 @@ func (s *ScanIp) GetIpOpenPort(ip string, port string) ([]int, []int) {
 		wg.Add(1)
 		go func(value []int, key int) {
 			defer wg.Done()
-			var tmpPorts []int
+			var tmpOpenPorts []int
+			var tmpDownPorts []int
 			for i := 0; i < len(value); i++ {
 				opened := s.isOpen(ip, value[i])
 				if opened {
-					tmpPorts = append(tmpPorts, value[i])
+					tmpOpenPorts = append(tmpOpenPorts, value[i])
 					fmt.Println(fmt.Sprintf("【%v】端口:%v ............... 开放 ............... ", ip, value[i]))
 				} else {
-					//s.sendLog(fmt.Sprintf("【%v】端口:%v 关闭", ip, value[i]),wsConn)
+					tmpDownPorts = append(tmpDownPorts, value[i])
+					fmt.Println(fmt.Sprintf("【%v】端口:%v ............... 关闭 ...............", ip, value[i]))
 				}
 			}
 			mutex.Lock()
-			openPorts = append(openPorts, tmpPorts...)
+			openPorts = append(openPorts, tmpOpenPorts...)
+			downPorts = append(downPorts, tmpDownPorts...)
 			mutex.Unlock()
-			if len(tmpPorts) > 0 {
-				fmt.Println(fmt.Sprintf("【%v】协程%v 执行完成，时长： %.3fs，开放端口： %v", ip, key, time.Since(start).Seconds(), tmpPorts))
+			if len(tmpOpenPorts) > 0 {
+				fmt.Println(fmt.Sprintf("【%v】协程%v 执行完成，时长： %.3fs，开放端口： %v，关闭端口： %v", ip, key, time.Since(start).Seconds(), tmpOpenPorts, tmpDownPorts))
 			}
 		}(v, k)
 	}
 	wg.Wait()
-	fmt.Println(fmt.Sprintf("【%v】^_^扫描结束，执行时长%.3fs , 所有开放的端口:%v", ip, time.Since(start).Seconds(), openPorts))
+	fmt.Println(fmt.Sprintf("【%v】^_^扫描结束，执行时长%.3fs , 所有开放的端口:%v, 所有关闭的端口:%v", ip, time.Since(start).Seconds(), openPorts, downPorts))
 	return openPorts, ports
 }
 
