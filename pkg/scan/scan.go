@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-//ip 扫描
+// ScanIp ip 扫描
 type ScanIp struct {
 	debug   bool
 	timeout int
@@ -70,10 +70,10 @@ func (s *ScanIp) GetIpOpenPort(ip string, port string) ([]int, []int) {
 				opened := s.isOpen(ip, value[i])
 				if opened {
 					tmpOpenPorts = append(tmpOpenPorts, value[i])
-					fmt.Println(fmt.Sprintf("【%v】端口:%v ............... 开放 ............... ", ip, value[i]))
+					fmt.Println(fmt.Sprintf("【%v】端口:%v ...... 开放 ...... ", ip, value[i]))
 				} else {
 					tmpDownPorts = append(tmpDownPorts, value[i])
-					fmt.Println(fmt.Sprintf("【%v】端口:%v ............... 关闭 ...............", ip, value[i]))
+					fmt.Println(fmt.Sprintf("【%v】端口:%v ...... 关闭 ......", ip, value[i]))
 				}
 			}
 			mutex.Lock()
@@ -168,7 +168,7 @@ func (s *ScanIp) filterPort(str string) (int, error) {
 	return port, nil
 }
 
-//查看端口号是否打开
+// isOpen 查看端口号是否打开
 func (s *ScanIp) isOpen(ip string, port int) bool {
 	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", ip, port), time.Millisecond*time.Duration(s.timeout))
 	if err != nil {
